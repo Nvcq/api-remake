@@ -2,6 +2,10 @@
 
 namespace App\Command;
 
+use App\Entity\Coin;
+use App\Entity\Exchange;
+use App\Entity\Tag;
+use App\Entity\Ticker;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use App\Entity\RandomUser;
@@ -34,13 +38,42 @@ class InsertDataCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $response = $this->client->request(
+        $randomUserApi = $this->client->request(
             'GET',
             'https://randomuser.me/api/?results=10&inc=gender,name,email,dob,location,picture',
         );
 
-        $content = $response->getContent();
+        $content = $randomUserApi->getContent();
         $data = json_decode($content);
+
+        $exchangeApiCall = $this->client->request(
+            'GET',
+            'https://api.coinpaprika.com/v1/exchanges',
+        );
+        $exchangeData = $exchangeApiCall->getContent();
+        $exchanges = json_decode($exchangeData);
+
+        $coinApiCall = $this->client->request(
+            'GET',
+            'https://api.coinpaprika.com/v1/coins',
+        );
+        $coinData = $coinApiCall->getContent();
+        $coins = json_decode($coinData);
+
+        $tagApiCall = $this->client->request(
+            'GET',
+            'https://api.coinpaprika.com/v1/tags',
+        );
+        $tagData = $tagApiCall->getContent();
+        $tags = json_decode($tagData);
+
+        $tickerApiCall = $this->client->request(
+            'GET',
+            'https://api.coinpaprika.com/v1/ticker',
+        );
+        $tickerData = $tickerApiCall->getContent();
+        $tickers = json_decode($tickerData);
+
 
         for ($i = 0; $i <= 9; $i++) {
             $randomUser = new RandomUser();
@@ -51,8 +84,42 @@ class InsertDataCommand extends Command
             $randomUser->setAge($data->results[$i]->dob->age);
             $randomUser->setCountry($data->results[$i]->location->country);
             $randomUser->setPicture($data->results[$i]->picture->thumbnail);
-
             $this->em->persist($randomUser);
+
+            $exchange = new Exchange();
+            $exchange->setName($exchanges[$i]->name);
+            $exchange->setDescription($exchanges[$i]->description);
+            $exchange->setActive($exchanges[$i]->active);
+            $exchange->setMessage($exchanges[$i]->message);
+            $exchange->setWebsite($exchanges[$i]->links->website[0]);
+            $this->em->persist($exchange);
+
+            $coin = new Coin();
+            $coin->setName($coins[$i]->name);
+            $coin->setSymbol($coins[$i]->symbol);
+            $coin->setRanked($coins[$i]->rank);
+            $coin->setIsNew($coins[$i]->is_new);
+            $coin->setIsActive($coins[$i]->is_active);
+            $coin->setType($coins[$i]->type);
+            $this->em->persist($coin);
+
+            $tag = new Tag();
+            $tag->setName($tags[$i]->name);
+            $tag->setDescription($tags[$i]->description);
+            $tag->setType($tags[$i]->type);
+            $tag->setCoinCounter($tags[$i]->coin_counter);
+            $tag->setIcoCounter($tags[$i]->ico_counter);
+            $this->em->persist($tag);
+
+            $ticker = new Ticker();
+            $ticker->setName($tickers[$i]->name);
+            $ticker->setSymbol($tickers[$i]->symbol);
+            $ticker->setRanked($tickers[$i]->rank);
+            $ticker->setCirculatingSupply($tickers[$i]->circulating_supply / 1000);
+            $ticker->setTotalSupply($tickers[$i]->total_supply / 1000);
+            $ticker->setPrice($tickers[$i]->price_usd);
+            $this->em->persist($ticker);
+
         }
 
         $this->em->flush();

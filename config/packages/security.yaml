@@ -48,6 +48,10 @@ security:
         - { path: ^/api/docs,  roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/random_users, roles: ROLE_USER }
+        - { path: ^/api/coins, roles: ROLE_USER }
+        - { path: ^/api/exchanges, roles: ROLE_USER }
+        - { path: ^/api/tags, roles: ROLE_USER }
+        - { path: ^/api/tickers, roles: ROLE_USER }
         # - { path: ^/profile, roles: ROLE_USER }
 
 when@test:

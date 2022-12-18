@@ -14,3 +14,5 @@ This project is a remake of CoinPaprika API (https://api.coinpaprika.com/)
 - You can generate a JWT Token with Postman on "/api/login_check" and then enter it in the swagger window on "/api" to get access 
 
 ## 🎊 ENJOY !
+
+ps: dsl mais Coupe du monde > Étape 4 🥲

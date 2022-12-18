@@ -1,6 +1,6 @@
 ## API Remake
 
-# This project is a remake of CoinPaprika API (https://api.coinpaprika.com/)
+This project is a remake of CoinPaprika API (https://api.coinpaprika.com/)
 
 # To start the project, follow theses steps : 
 - Clone this repo
